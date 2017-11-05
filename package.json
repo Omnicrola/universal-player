@@ -1,0 +1,15 @@
+{
+  "name": "universal-player",
+  "version": "1.0.0",
+  "description": "A game about making games",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --config webpack.config.js"
+  },
+  "author": "Eric Schreffler",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-loader": "^7.1.2",
+    "webpack": "^3.8.1"
+  }
+}
