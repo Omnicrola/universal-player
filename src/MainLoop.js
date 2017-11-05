@@ -1,30 +1,52 @@
+import PlayButtonModule from './PlayButtonModule.js'
+import ButtonEventAdapter from './ButtonEventAdapter.js'
+import EventBus from "./events/EventBus";
+import config from './configuration.js';
+
 export default class MainLoop {
 
-	static build() {
-		return new MainLoop([]);
-	}
+    static build() {
+        let fps = 30;
 
-	
-	construct(modules){
-		this.modules = modules;
-	}
+        let eventBus = new EventBus(config);
+        return new MainLoop(fps, [
+            new ButtonEventAdapter(config, eventBus),
+            new PlayButtonModule(eventBus),
+        ]);
+    }
 
-	start() {
-		console.log('started!');
-		requestAnimationFrame(this._runLoop.bind(this));
-	}
+    constructor(fps, modules) {
+        this.fps = fps;
+        this.msPerFrame = 1000 / fps;
+        this.modules = modules;
+    }
 
-	_runLoop() {
-		this._update();
-		this._render();
-		requestAnimationFrame(this._runLoop.bind(this));
-	}
+    start() {
+        console.log('started! ' + this.fps);
+        requestAnimationFrame(this._runLoop.bind(this));
+    }
 
-	_update() {
-		console.log('update!');
-	}
+    _runLoop() {
+        let timestamp = Date.now();
+        if (timestamp < this.lastFrameTimeMs + (1000 / this.fps)) {
+            requestAnimationFrame(this._runLoop.bind(this));
+            return;
+        }
+        let delta = (timestamp - this.lastFrameTimeMs ) / this.msPerFrame;
+        this._update(delta);
+        this._render();
+        this.lastFrameTimeMs = timestamp;
+        requestAnimationFrame(this._runLoop.bind(this));
+    }
 
-	_render() {
+    _update(delta) {
+        let total = this.modules.length;
+        for (let index = 0; index < total; index++) {
+            this.modules[index].update(delta);
+        }
+    }
 
-	}
+    _render() {
+
+    }
 }

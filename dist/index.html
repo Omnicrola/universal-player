@@ -3,15 +3,41 @@
 <head>
 	<title>Universal Player</title>
 	<link href="https://fonts.googleapis.com/css?family=Fjord+One" rel="stylesheet"> 
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"></link>
 	<link rel="stylesheet" type="text/css" href="style.css"></link>
 </head>
 <body>
 	<header>
 		<h1>Universal Player</h1>
 	</header>
-	<div id="content">
-		
-	</id>
+	<div id="content" class="row">
+		<div class="col-sm-4">
+			<div id="players">1 player</div>
+			<div id="rewards">0</div>
+			<button id="playButton" ><i class="fa fa-play"></i> Play!</button>
+		</div>
+		<div class="col-sm-4">
+			<div id="upgrades">
+				<button onclick="upgrade('banner-ads')">Banner ad placement (creates revenue)</button>
+				<button onclick="upgrade('advertise-social-10')" >Advertise on social media ($10.00)</button>
+				<button onclick="upgrade('add-microtransactions')">Add microtransactions (100 views)</button>
+				<button onclick="upgrade('add-reward-system')">Introduce rewards system</button>
+			</div>
+		</div>
+		<div class="col-sm-4">
+			<div id="microtransactions">
+				<div>100 Smoits per $1</div>
+				<button><i class="fa fa-plus"></i></button>
+				<button><i class="fa fa-minus"></i></button>
+			</div>
+			<div id="rewards">
+				<div>100% Chance of reward per play</div>
+				<button><i class="fa fa-plus"></i></button>
+				<button><i class="fa fa-minus"></i></button>
+			</div>
+		</div>
+	</div>
 	<footer>
 		
 	</footer>

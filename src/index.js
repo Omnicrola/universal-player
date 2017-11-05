@@ -1,4 +1,4 @@
 import MainLoop from './MainLoop.js';
 
-var mainLoop = new MainLoop();
+var mainLoop = MainLoop.build();
 mainLoop.start();
