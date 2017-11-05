@@ -1,5 +1,6 @@
 export default {
     reward(chanceOfSuccess) {
-        return chanceOfSuccess < Math.random();
+        let number = Math.random();
+        return  number <= chanceOfSuccess;
     }
 }

@@ -1,4 +1,12 @@
 export default {
+
     playButtonId: '#playButton',
-    autoSaveInterval: (1000 * 30)
+    rewardCountDisplayId: '#rewards',
+
+    storageKey: 'universal-player-v1',
+    autoSaveInterval: (1000 * 30),
+    defaults: {
+        rewards: 0,
+        manualPlayRewardRatio: 1
+    }
 }

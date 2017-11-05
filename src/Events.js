@@ -1,4 +1,8 @@
 export default class Events {
+    static get REWARD_COUNT_CHANGE() {
+        return 'reward-count-change';
+    };
+
     static get REWARD_MISSED() {
         return 'reward-missed';
     }

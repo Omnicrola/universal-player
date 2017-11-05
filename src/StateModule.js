@@ -1,19 +1,37 @@
+import Events from "./Events";
+import GameEvent from "./GameEvent";
+
 export default class StateModule {
-    static get _STORAGE_KEY() {
-        return 'universal_player_data';
+
+    constructor(config, eventBus) {
+        this.globalState = config.defaults;
+        this.config = config;
+        this._loadExistingState(config);
+        this._addStateWatchers(eventBus);
     }
 
-    constructor(config) {
-        this.state = config.defaults;
-        this._loadExistingState(config);
+    _addStateWatchers(eventBus) {
+        let self = this;
+        eventBus.subscribe(Events.GAIN_REWARD, () => {
+            self.globalState.rewards++;
+            eventBus.broadcast(new GameEvent(Events.REWARD_COUNT_CHANGE, self.globalState.rewards));
+        });
+    }
+
+    get state() {
+        return this.globalState;
     }
 
     _loadExistingState(config) {
-        let serialData = window.localStorage.getItem(this._STORAGE_KEY);
+        let serialData = window.localStorage.getItem(config.storageKey);
         if (serialData !== "undefined") {
             let stateData = JSON.parse(serialData);
-            Object.assign(this.state, stateData);
-            console.log('Loaded existing game.');
+            if (stateData) {
+                Object.assign(this.globalState, stateData);
+                console.log('Loaded existing game.');
+            } else {
+                console.log('No existing game found.');
+            }
         } else {
             console.log('No existing game found.');
         }
@@ -21,8 +39,8 @@ export default class StateModule {
     }
 
     _saveState() {
-        let serialData = JSON.stringify(this.state);
-        window.localStorage.setItem(this._STORAGE_KEY, serialData);
-        console.log('Auto-saved');
+        let serialData = JSON.stringify(this.globalState);
+        window.localStorage.setItem(this.config.storageKey, serialData);
+        console.log('Auto-saved : ' + serialData);
     }
 }
