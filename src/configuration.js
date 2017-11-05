@@ -1,3 +1,4 @@
 export default {
-    playButtonId : '#playButton'
+    playButtonId: '#playButton',
+    autoSaveInterval: (1000 * 30)
 }

@@ -9,9 +9,12 @@ export default class EventBus {
         if (this.subscribers[event.type]) {
             let subscribersToEvent = this.subscribers[event.type];
             let total = subscribersToEvent.length;
+            console.log("Broadcasting event '" + event.type + "' to " + total + " subscribers");
             for (let index = 0; index < total; index++) {
                 subscribersToEvent[index](event);
             }
+        } else {
+            console.log('No subscribers found for GameEvent of type : ' + event.type);
         }
     }
 

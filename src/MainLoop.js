@@ -1,5 +1,6 @@
-import PlayButtonModule from './PlayButtonModule.js'
-import ButtonEventAdapter from './ButtonEventAdapter.js'
+import PlayButtonModule from './PlayButtonModule.js';
+import ButtonEventAdapter from './ButtonEventAdapter.js';
+import StateModule from './StateModule.js';
 import EventBus from "./events/EventBus";
 import config from './configuration.js';
 
@@ -9,9 +10,11 @@ export default class MainLoop {
         let fps = 30;
 
         let eventBus = new EventBus(config);
+        let stateModule = new StateModule(config);
+
         return new MainLoop(fps, [
             new ButtonEventAdapter(config, eventBus),
-            new PlayButtonModule(eventBus),
+            new PlayButtonModule(eventBus, stateModule),
         ]);
     }
 
