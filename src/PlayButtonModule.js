@@ -1,6 +1,6 @@
-import Events from "./Events";
+import Events from "./events/Events";
 import Randomizer from './util/Randomizer.js'
-import GameEvent from "./GameEvent";
+import GameEvent from "./events/GameEvent";
 
 export default class PlayButtonModule {
     constructor(eventBus, stateModule) {

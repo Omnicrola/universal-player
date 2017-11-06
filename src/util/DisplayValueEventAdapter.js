@@ -1,4 +1,4 @@
-import Events from "../Events";
+import Events from "../events/Events";
 
 export default class DisplayValueEventAdapter {
     constructor(config, eventBus) {
@@ -12,9 +12,10 @@ export default class DisplayValueEventAdapter {
 
     _bindFieldsToEvents() {
         this._bindField(this.config.rewardCountDisplayId, Events.REWARD_COUNT_CHANGE);
+        this._bindField(this.config.playerCountDisplayId, Events.PLAYER_COUNT_CHANGE);
     }
 
-    _bindField(querySelector, eventType){
+    _bindField(querySelector, eventType) {
         let element = document.querySelector(querySelector);
         this.eventBus.subscribe(eventType, (event) => {
             element.innerText = event.data;

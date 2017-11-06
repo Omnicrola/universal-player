@@ -1,3 +1,5 @@
+import Events from "./Events";
+
 export default class EventBus {
 
     constructor(config) {
@@ -6,15 +8,20 @@ export default class EventBus {
     }
 
     broadcast(event) {
-        if (this.subscribers[event.type]) {
-            let subscribersToEvent = this.subscribers[event.type];
+        this._broadcastToType(event.type, event);
+        this._broadcastToType(Events.ALL, event);
+    }
+
+
+    _broadcastToType(type, event) {
+        if (this.subscribers[type]) {
+
+            let subscribersToEvent = this.subscribers[type];
             let total = subscribersToEvent.length;
-            console.log("Broadcasting event '" + event.type + "' to " + total + " subscribers");
+            console.log("Broadcasting event '" + type + "' to " + total + " subscribers");
             for (let index = 0; index < total; index++) {
                 subscribersToEvent[index](event);
             }
-        } else {
-            console.log('No subscribers found for GameEvent of type : ' + event.type);
         }
     }
 

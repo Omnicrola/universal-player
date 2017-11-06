@@ -1,5 +1,5 @@
-import Events from "./Events";
-import GameEvent from "./GameEvent";
+import Events from "./events/Events";
+import GameEvent from "./events/GameEvent";
 
 export default class StateModule {
 

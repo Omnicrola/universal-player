@@ -4,6 +4,7 @@ import DisplayValueEventAdapter from './util/DisplayValueEventAdapter.js';
 import StateModule from './StateModule.js';
 import EventBus from "./events/EventBus";
 import config from './configuration.js';
+import UpgradesModule from "./upgrades/UpgradesModule";
 
 export default class MainLoop {
 
@@ -17,6 +18,7 @@ export default class MainLoop {
             new ButtonEventAdapter(config, eventBus),
             new DisplayValueEventAdapter(config, eventBus),
             new PlayButtonModule(eventBus, stateModule),
+            new UpgradesModule(config, stateModule, eventBus)
         ]);
     }
 
