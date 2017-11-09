@@ -1,13 +1,13 @@
 import Events from '../events/Events';
-import Upgrades from "./Upgrades";
+import UpgradesBuilder from "./UpgradesBuilder";
 
 export default class UpgradesModule {
     constructor(config, stateModule, eventBus) {
         this.config = config;
         this.stateModule = stateModule;
-        this.upgrades = Upgrades.build();
+        this.upgrades = UpgradesBuilder.build();
         this.displayElements = [];
-        eventBus.subscribe(Events.ALL, this._evaluate.bind(this));
+        eventBus.subscribe(Events.CURRENCY_CHANGED, this._evaluate.bind(this));
     }
 
     update(delta) {
@@ -18,7 +18,7 @@ export default class UpgradesModule {
         }
     }
 
-    _evaluate() {
+    _evaluate(event) {
         let total = this.upgrades.length;
         for (let index = 0; index < total; index++) {
             this._evalUpgrade(this.upgrades[index]);
@@ -43,7 +43,7 @@ export default class UpgradesModule {
         newButton.upgrade = upgrade;
         newButton.textContent = upgrade.title;
         newButton.id = 'upgrade-' + upgrade.id;
-        newButton.disabled = !upgrade.isPurchasable(this.stateModule.state);
+        newButton.disabled = !upgrade.isPurchasable(this.stateModule);
         upgradeContainer.appendChild(newButton);
         this.displayElements[upgrade.id] = newButton;
     }

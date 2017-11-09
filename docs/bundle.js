@@ -81,8 +81,8 @@ class Events {
         return 'player-count-change';
     };
 
-    static get REWARD_COUNT_CHANGE() {
-        return 'reward-count-change';
+    static get CURRENCY_CHANGED() {
+        return 'currency-changed';
     };
 
     static get REWARD_MISSED() {
@@ -330,6 +330,8 @@ class DisplayValueEventAdapter {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__events_Events__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__events_GameEvent__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__economy_Currency__ = __webpack_require__(13);
+
 
 
 
@@ -346,7 +348,8 @@ class StateModule {
         let self = this;
         eventBus.subscribe(__WEBPACK_IMPORTED_MODULE_0__events_Events__["a" /* default */].GAIN_REWARD, () => {
             self.globalState.rewards++;
-            eventBus.broadcast(new __WEBPACK_IMPORTED_MODULE_1__events_GameEvent__["a" /* default */](__WEBPACK_IMPORTED_MODULE_0__events_Events__["a" /* default */].REWARD_COUNT_CHANGE, self.globalState.rewards));
+            let eventData = {type: __WEBPACK_IMPORTED_MODULE_2__economy_Currency__["a" /* default */].REWARD, amount: self.globalState.rewards};
+            eventBus.broadcast(new __WEBPACK_IMPORTED_MODULE_1__events_GameEvent__["a" /* default */](__WEBPACK_IMPORTED_MODULE_0__events_Events__["a" /* default */].CURRENCY_CHANGED, eventData));
         });
     }
 
@@ -448,7 +451,7 @@ class EventBus {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__events_Events__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Upgrades__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__UpgradesBuilder__ = __webpack_require__(12);
 
 
 
@@ -456,9 +459,9 @@ class UpgradesModule {
     constructor(config, stateModule, eventBus) {
         this.config = config;
         this.stateModule = stateModule;
-        this.upgrades = __WEBPACK_IMPORTED_MODULE_1__Upgrades__["b" /* default */].build();
+        this.upgrades = __WEBPACK_IMPORTED_MODULE_1__UpgradesBuilder__["a" /* default */].build();
         this.displayElements = [];
-        eventBus.subscribe(__WEBPACK_IMPORTED_MODULE_0__events_Events__["a" /* default */].ALL, this._evaluate.bind(this));
+        eventBus.subscribe(__WEBPACK_IMPORTED_MODULE_0__events_Events__["a" /* default */].CURRENCY_CHANGED, this._evaluate.bind(this));
     }
 
     update(delta) {
@@ -469,7 +472,7 @@ class UpgradesModule {
         }
     }
 
-    _evaluate() {
+    _evaluate(event) {
         let total = this.upgrades.length;
         for (let index = 0; index < total; index++) {
             this._evalUpgrade(this.upgrades[index]);
@@ -494,7 +497,7 @@ class UpgradesModule {
         newButton.upgrade = upgrade;
         newButton.textContent = upgrade.title;
         newButton.id = 'upgrade-' + upgrade.id;
-        newButton.disabled = !upgrade.isPurchasable(this.stateModule.state);
+        newButton.disabled = !upgrade.isPurchasable(this.stateModule);
         upgradeContainer.appendChild(newButton);
         this.displayElements[upgrade.id] = newButton;
     }
@@ -512,55 +515,37 @@ class UpgradesModule {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__economy_Currency_js__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__UpgradeShareWithFriend__ = __webpack_require__(14);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__events_GameEvent__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__events_Events__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__Upgrade__ = __webpack_require__(14);
 
 
 
-class Upgrades {
+
+
+class UpgradesBuilder {
     static build() {
         return [
-            new __WEBPACK_IMPORTED_MODULE_1__UpgradeShareWithFriend__["a" /* default */]()
+            UpgradeShareWithFriend(1)
         ];
     }
 }
-/* harmony export (immutable) */ __webpack_exports__["b"] = Upgrades;
+/* harmony export (immutable) */ __webpack_exports__["a"] = UpgradesBuilder;
 
 
-class Upgrade {
-    constructor(id, title, costs) {
-        this.id = id;
-        this.title = title;
-        this.costs = costs;
-    }
-
-    isVisible(gameStateModule) {
-        throw new Error('Not implemented');
-    }
-
-    upgrade(gameStateModule) {
-        throw new Error('Not implemented');
-    }
-
-    isPurchasable(gameStateModule) {
-        let total = this.costs.length;
-        for (let index = 0; index < total; index++) {
-            if (!this._haveCurrency(gameStateModule.state, this.costs[index])) {
-                return false;
-            }
+function UpgradeShareWithFriend(id) {
+    return new __WEBPACK_IMPORTED_MODULE_3__Upgrade__["a" /* default */]({
+        id: id,
+        title: 'Share with a friend (rewards:10, +1 players)',
+        costs: [{type: __WEBPACK_IMPORTED_MODULE_0__economy_Currency_js__["a" /* default */].REWARD, amount: 10}],
+        isVisible: (stateModule) => {
+            return stateModule.state.rewards >= 25;
+        },
+        upgrade: (eventBus) => {
+            eventBus.broadcast(new __WEBPACK_IMPORTED_MODULE_1__events_GameEvent__["a" /* default */]((__WEBPACK_IMPORTED_MODULE_2__events_Events__["a" /* default */].ADD_PLAYER)))
         }
-        return true;
-    }
-
-    _haveCurrency(gameState, cost) {
-        if (cost.type === __WEBPACK_IMPORTED_MODULE_0__economy_Currency_js__["a" /* default */].REWARD) {
-            return gameState.rewards >= cost.amount;
-        }
-        return false;
-    }
-
+    });
 }
-/* harmony export (immutable) */ __webpack_exports__["a"] = Upgrade;
-
 
 /***/ }),
 /* 13 */
@@ -580,34 +565,40 @@ class Currency {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Upgrades__ = __webpack_require__(12);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__economy_Currency__ = __webpack_require__(13);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__events_GameEvent__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__events_Events__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__economy_Currency__ = __webpack_require__(13);
 
 
-
-
-
-class UpgradeShareWithFriend extends __WEBPACK_IMPORTED_MODULE_0__Upgrades__["a" /* Upgrade */] {
-    constructor() {
-        let costs = [{type: __WEBPACK_IMPORTED_MODULE_1__economy_Currency__["a" /* default */].REWARD, amount: 10}];
-        super(1, 'Share with a friend (rewards:10, +1 players)', costs);
+class Upgrade {
+    constructor(params) {
+        this.id = params.id;
+        this.title = params.title;
+        this.costs = params.costs;
+        this.isVisible = params.isVisible;
+        this.upgrade = params.upgrade;
     }
 
-    isVisible(stateModule) {
-        return stateModule.state.rewards >= 25;
+    isPurchasable(gameStateModule) {
+        let total = this.costs.length;
+        for (let index = 0; index < total; index++) {
+            if (!this._haveCurrency(gameStateModule.state, this.costs[index])) {
+                return false;
+            }
+        }
+        return true;
     }
 
-    upgrade(eventBus) {
-        eventBus.broadcast(new __WEBPACK_IMPORTED_MODULE_2__events_GameEvent__["a" /* default */](__WEBPACK_IMPORTED_MODULE_3__events_Events__["a" /* default */].ADD_PLAYER));
-
+    _haveCurrency(gameState, cost) {
+        if (cost.type === __WEBPACK_IMPORTED_MODULE_0__economy_Currency__["a" /* default */].REWARD) {
+            return gameState.rewards >= cost.amount;
+        }
+        return false;
     }
+
 }
-/* harmony export (immutable) */ __webpack_exports__["a"] = UpgradeShareWithFriend;
-
+/* harmony export (immutable) */ __webpack_exports__["a"] = Upgrade;
 
 
 
 /***/ })
 /******/ ]);
+//# sourceMappingURL=bundle.js.map

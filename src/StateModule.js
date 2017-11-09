@@ -1,5 +1,6 @@
 import Events from "./events/Events";
 import GameEvent from "./events/GameEvent";
+import Currency from "./economy/Currency";
 
 export default class StateModule {
 
@@ -14,7 +15,8 @@ export default class StateModule {
         let self = this;
         eventBus.subscribe(Events.GAIN_REWARD, () => {
             self.globalState.rewards++;
-            eventBus.broadcast(new GameEvent(Events.REWARD_COUNT_CHANGE, self.globalState.rewards));
+            let eventData = {type: Currency.REWARD, amount: self.globalState.rewards};
+            eventBus.broadcast(new GameEvent(Events.CURRENCY_CHANGED, eventData));
         });
     }
 

@@ -11,8 +11,8 @@ export default class Events {
         return 'player-count-change';
     };
 
-    static get REWARD_COUNT_CHANGE() {
-        return 'reward-count-change';
+    static get CURRENCY_CHANGED() {
+        return 'currency-changed';
     };
 
     static get REWARD_MISSED() {
