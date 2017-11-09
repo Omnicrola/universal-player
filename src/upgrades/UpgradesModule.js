@@ -41,11 +41,23 @@ export default class UpgradesModule {
         let upgradeContainer = document.querySelector(this.config.upgradeContainerId);
         let newButton = document.createElement('button');
         newButton.upgrade = upgrade;
-        newButton.textContent = upgrade.title;
+        newButton.innerHTML = this._buildUpgradeText(upgrade);
         newButton.id = 'upgrade-' + upgrade.id;
         newButton.disabled = !upgrade.isPurchasable(this.stateModule);
+        newButton.onclick = this._onUpgradeActivate(upgrade).bind(this);
         upgradeContainer.appendChild(newButton);
         this.displayElements[upgrade.id] = newButton;
+    }
+
+    _buildUpgradeText(upgrade) {
+        return `<strong>${upgrade.title}</strong> <br/>
+            (${upgrade.cost}) =&gt; <em>${upgrade.yields}</em>`;
+    }
+
+    _onUpgradeActivate(upgrade) {
+        return (event) => {
+            upgrade.activate(this.stateModule);
+        };
     }
 
     _isNotCurrentlyVisible(id) {

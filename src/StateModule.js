@@ -7,21 +7,36 @@ export default class StateModule {
     constructor(config, eventBus) {
         this.globalState = config.defaults;
         this.config = config;
+        this.eventBus = eventBus;
         this._loadExistingState(config);
-        this._addStateWatchers(eventBus);
     }
 
-    _addStateWatchers(eventBus) {
-        let self = this;
-        eventBus.subscribe(Events.GAIN_REWARD, () => {
-            self.globalState.rewards++;
-            let eventData = {type: Currency.REWARD, amount: self.globalState.rewards};
-            eventBus.broadcast(new GameEvent(Events.CURRENCY_CHANGED, eventData));
-        });
+    addPlayer(count) {
+        this.globalState.players += count;
+        this.eventBus.broadcast(new GameEvent(Events.PLAYER_COUNT_CHANGE, this.globalState.players));
     }
 
-    get state() {
-        return this.globalState;
+    addReward(count) {
+        this.globalState.rewards += count;
+        this.eventBus.broadcast(new GameEvent(Events.REWARDS_CHANGED, this.globalState.rewards));
+        this.eventBus.broadcast(new GameEvent(Events.CURRENCY_CHANGED));
+    }
+
+    activateFeature(feature) {
+        this.globalState.features[feature] = true;
+        this.eventBus.broadcast(new GameEvent(Events.FEATURES_CHANGED, feature));
+    }
+
+    rewards() {
+        return this.globalState.rewards;
+    }
+
+    players() {
+        return this.globalState.players;
+    }
+
+    manualPlayRewardRatio() {
+        return this.globalState.manualPlayRewardRatio;
     }
 
     _loadExistingState(config) {
@@ -30,6 +45,8 @@ export default class StateModule {
             let stateData = JSON.parse(serialData);
             if (stateData) {
                 Object.assign(this.globalState, stateData);
+                this.eventBus.broadcast(new GameEvent(Events.PLAYER_COUNT_CHANGE, this.globalState.players));
+                this.eventBus.broadcast(new GameEvent(Events.REWARDS_CHANGED, this.globalState.rewards));
                 console.log('Loaded existing game.');
             } else {
                 console.log('No existing game found.');

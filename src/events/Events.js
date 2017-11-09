@@ -1,6 +1,10 @@
 export default class Events {
-    static get ADD_PLAYER() {
-        return 'add-player';
+    static get FEATURES_CHANGED() {
+        return 'features-changed';
+    };
+
+    static get REWARDS_CHANGED() {
+        return 'rewards-changed'
     };
 
     static get ALL() {

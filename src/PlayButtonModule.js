@@ -10,9 +10,10 @@ export default class PlayButtonModule {
     }
 
     onPlayButton(event) {
-        let chanceOfReward = this.stateModule.state.manualPlayRewardRatio;
+        let chanceOfReward = this.stateModule.manualPlayRewardRatio();
         let shouldGetReward = Randomizer.reward(chanceOfReward);
-        if(shouldGetReward){
+        if (shouldGetReward) {
+            this.stateModule.addReward(1);
             this.eventBus.broadcast(new GameEvent(Events.GAIN_REWARD));
         } else {
             this.eventBus.broadcast(new GameEvent(Events.REWARD_MISSED));

@@ -11,7 +11,7 @@ export default class DisplayValueEventAdapter {
     }
 
     _bindFieldsToEvents() {
-        this._bindField(this.config.rewardCountDisplayId, Events.REWARD_COUNT_CHANGE);
+        this._bindField(this.config.rewardCountDisplayId, Events.REWARDS_CHANGED);
         this._bindField(this.config.playerCountDisplayId, Events.PLAYER_COUNT_CHANGE);
     }
 

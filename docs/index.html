@@ -1,43 +1,47 @@
 <html>
-<meta charset="UTF-8"> 
+<meta charset="UTF-8">
 <head>
-	<title>Universal Player</title>
-	<link href="https://fonts.googleapis.com/css?family=Fjord+One" rel="stylesheet"> 
-	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"></link>
-	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"></link>
-	<link rel="stylesheet" type="text/css" href="style.css"></link>
+    <title>Universal Player</title>
+    <link href="https://fonts.googleapis.com/css?family=Fjord+One" rel="stylesheet">
+    <link rel="stylesheet" type="text/css"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css"
+          href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
 </head>
 <body>
-	<header>
-		<h1>Universal Player</h1>
-	</header>
-	<div id="content" class="row">
-		<div class="col-sm-4">
-			<div>Players : <span id="players">1</span></div>
-			<div>Rewards : <span id="rewards">0</span></div>
-			<button id="playButton" ><i class="fa fa-play"></i> Play!</button>
-		</div>
-		<div class="col-sm-4">
-			<h3>Upgrades</h3>
-			<div id="upgrades">
-			</div>
-		</div>
-		<div class="col-sm-4">
-			<div id="microtransactions">
-				<div>100 Smoits per $1</div>
-				<button><i class="fa fa-plus"></i></button>
-				<button><i class="fa fa-minus"></i></button>
-			</div>
-			<div id="rewards-control">
-				<div>100% Chance of reward per play</div>
-				<button><i class="fa fa-plus"></i></button>
-				<button><i class="fa fa-minus"></i></button>
-			</div>
-		</div>
-	</div>
-	<footer>
-		
-	</footer>
-	<script src="bundle.js"></script>
+<header>
+    <h1>Universal Player</h1>
+</header>
+<div id="content" class="row">
+    <div class="col-sm-4">
+        <div>Players : <span id="players">1</span></div>
+        <div>Rewards : <span id="rewards">0</span></div>
+        <div id="reward-highlight" class="reward-bg">
+            <button id="playButton"><i class="fa fa-play"></i> Play!</button>
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <h3>Upgrades</h3>
+        <div id="upgrades">
+        </div>
+    </div>
+    <div class="col-sm-4">
+        <div id="microtransactions">
+            <div>100 Smoits per $1</div>
+            <button><i class="fa fa-plus"></i></button>
+            <button><i class="fa fa-minus"></i></button>
+        </div>
+        <div id="rewards-control">
+            <div>100% Chance of reward per play</div>
+            <button><i class="fa fa-plus"></i></button>
+            <button><i class="fa fa-minus"></i></button>
+        </div>
+    </div>
+</div>
+<footer>
+
+</footer>
+<script src="bundle.js"></script>
 </body>
 </html>
