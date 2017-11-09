@@ -393,6 +393,17 @@ class StateModule {
         return this.globalState.manualPlayRewardRatio;
     }
 
+    isUpgradePurchased(upgrade) {
+        let contains = this.globalState.upgrades.indexOf(upgrade.id) >= 0;
+        return contains;
+    }
+
+    purchaseUpgrade(upgrade) {
+        upgrade.activate(this);
+        this.globalState.upgrades.push(upgrade.id);
+    }
+
+
     _loadExistingState(config) {
         let serialData = window.localStorage.getItem(config.storageKey);
         if (serialData !== "undefined") {
@@ -484,6 +495,7 @@ class EventBus {
     defaults: {
         rewards: 0,
         players: 1,
+        upgrades: [],
         features: {},
         manualPlayRewardRatio: 1
     }
@@ -524,15 +536,33 @@ class UpgradesModule {
     }
 
     _evalUpgrade(upgrade) {
-        let visible = upgrade.isVisible(this.stateModule);
-        if (visible && this._isNotCurrentlyVisible(upgrade.id)) {
+        let isAlreadyPurchased = this.stateModule.isUpgradePurchased(upgrade);
+        if (isAlreadyPurchased) {
+            this._removeUpgrade(upgrade);
+        } else if (upgrade.isVisible(this.stateModule)) {
+            this._updateUpgradeElement(upgrade);
+        }
+    }
+
+    _removeUpgrade(upgrade) {
+        let element = this._getElement(upgrade.id);
+        if (element) {
+            debugger;
+            element.parent().removeChild(element);
+            let element = this._getElement(upgrade.id);
+            let index = this.displayElements.indexOf(element);
+            this.displayElements.splice(index, 1);
+        }
+    }
+
+    _updateUpgradeElement(upgrade) {
+        if (this._isNotCurrentlyVisible(upgrade.id)) {
             this._createElement(upgrade);
         }
-        if (visible) {
-            let purchasable = upgrade.isPurchasable(this.stateModule);
-            console.log(upgrade.title + " is purchasable: " + purchasable);
-            this.displayElements[upgrade.id].disabled = !purchasable;
-        }
+        let purchasable = upgrade.isPurchasable(this.stateModule);
+        console.log(upgrade.title + " is purchasable: " + purchasable);
+        let element = this._getElement(upgrade.id);
+        element.disabled = !purchasable;
     }
 
     _createElement(upgrade) {
@@ -544,7 +574,7 @@ class UpgradesModule {
         newButton.disabled = !upgrade.isPurchasable(this.stateModule);
         newButton.onclick = this._onUpgradeActivate(upgrade).bind(this);
         upgradeContainer.appendChild(newButton);
-        this.displayElements[upgrade.id] = newButton;
+        this.displayElements.push(newButton);
     }
 
     _buildUpgradeText(upgrade) {
@@ -554,12 +584,17 @@ class UpgradesModule {
 
     _onUpgradeActivate(upgrade) {
         return (event) => {
-            upgrade.activate(this.stateModule);
+            this.stateModule.purchaseUpgrade(upgrade);
+            this._evaluate(null);
         };
     }
 
     _isNotCurrentlyVisible(id) {
-        return !this.displayElements[id];
+        return !this._getElement(id);
+    }
+
+    _getElement(id) {
+        return this.displayElements.filter(element => element.upgrade.id === id)[0];
     }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = UpgradesModule;

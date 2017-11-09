@@ -14,6 +14,7 @@ export default {
     defaults: {
         rewards: 0,
         players: 1,
+        upgrades: [],
         features: {},
         manualPlayRewardRatio: 1
     }

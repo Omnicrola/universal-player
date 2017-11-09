@@ -39,6 +39,17 @@ export default class StateModule {
         return this.globalState.manualPlayRewardRatio;
     }
 
+    isUpgradePurchased(upgrade) {
+        let contains = this.globalState.upgrades.indexOf(upgrade.id) >= 0;
+        return contains;
+    }
+
+    purchaseUpgrade(upgrade) {
+        upgrade.activate(this);
+        this.globalState.upgrades.push(upgrade.id);
+    }
+
+
     _loadExistingState(config) {
         let serialData = window.localStorage.getItem(config.storageKey);
         if (serialData !== "undefined") {
