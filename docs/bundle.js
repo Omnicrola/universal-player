@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 3);
+/******/ 	return __webpack_require__(__webpack_require__.s = 4);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -69,6 +69,10 @@
 
 "use strict";
 class Events {
+    static get GAME_INIT_COMPLETE() {
+        return 'game-init-complete';
+    };
+
     static get FEATURES_CHANGED() {
         return 'features-changed';
     };
@@ -144,26 +148,43 @@ class Currency {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__MainLoop_js__ = __webpack_require__(4);
+class Features {
+    static get POSITIVE_FEEDBACK() {
+        return 'positive-feedback';
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Features;
 
-
-var mainLoop = __WEBPACK_IMPORTED_MODULE_0__MainLoop_js__["a" /* default */].build();
-mainLoop.start();
 
 /***/ }),
 /* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__PlayButtonModule_js__ = __webpack_require__(5);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util_ButtonEventAdapter_js__ = __webpack_require__(7);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__util_DisplayValueEventAdapter_js__ = __webpack_require__(8);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__StateModule_js__ = __webpack_require__(9);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__events_EventBus__ = __webpack_require__(10);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__configuration_js__ = __webpack_require__(11);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__upgrades_UpgradesModule__ = __webpack_require__(12);
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__MainLoop_js__ = __webpack_require__(5);
+
+
+var mainLoop = __WEBPACK_IMPORTED_MODULE_0__MainLoop_js__["a" /* default */].build();
+mainLoop.start();
+
+/***/ }),
+/* 5 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__PlayButtonModule_js__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util_ButtonEventAdapter_js__ = __webpack_require__(8);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__util_DisplayValueEventAdapter_js__ = __webpack_require__(9);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__StateModule_js__ = __webpack_require__(10);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_4__events_EventBus__ = __webpack_require__(11);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_5__configuration_js__ = __webpack_require__(12);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__upgrades_UpgradesModule__ = __webpack_require__(13);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__features_FeaturesModule__ = __webpack_require__(16);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_8__events_GameEvent__ = __webpack_require__(1);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_9__events_Events__ = __webpack_require__(0);
+
+
 
 
 
@@ -181,7 +202,7 @@ class MainLoop {
         let eventBus = new __WEBPACK_IMPORTED_MODULE_4__events_EventBus__["a" /* default */](__WEBPACK_IMPORTED_MODULE_5__configuration_js__["a" /* default */]);
         let stateModule = new __WEBPACK_IMPORTED_MODULE_3__StateModule_js__["a" /* default */](__WEBPACK_IMPORTED_MODULE_5__configuration_js__["a" /* default */], eventBus);
 
-        return new MainLoop(fps, [
+        return new MainLoop(fps, eventBus, [
             new __WEBPACK_IMPORTED_MODULE_1__util_ButtonEventAdapter_js__["a" /* default */](__WEBPACK_IMPORTED_MODULE_5__configuration_js__["a" /* default */], eventBus),
             new __WEBPACK_IMPORTED_MODULE_2__util_DisplayValueEventAdapter_js__["a" /* default */](__WEBPACK_IMPORTED_MODULE_5__configuration_js__["a" /* default */], eventBus),
             new __WEBPACK_IMPORTED_MODULE_0__PlayButtonModule_js__["a" /* default */](eventBus, stateModule),
@@ -190,15 +211,17 @@ class MainLoop {
         ]);
     }
 
-    constructor(fps, modules) {
+    constructor(fps, eventBus, modules) {
         this.fps = fps;
         this.msPerFrame = 1000 / fps;
         this.modules = modules;
+        this.eventBus = eventBus;
     }
 
     start() {
         console.log('started! ' + this.fps);
         requestAnimationFrame(this._runLoop.bind(this));
+        this.eventBus.broadcast(new __WEBPACK_IMPORTED_MODULE_8__events_GameEvent__["a" /* default */](__WEBPACK_IMPORTED_MODULE_9__events_Events__["a" /* default */].GAME_INIT_COMPLETE));
     }
 
     _runLoop() {
@@ -229,12 +252,12 @@ class MainLoop {
 
 
 /***/ }),
-/* 5 */
+/* 6 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__events_Events__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util_Randomizer_js__ = __webpack_require__(6);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util_Randomizer_js__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__events_GameEvent__ = __webpack_require__(1);
 
 
@@ -266,7 +289,7 @@ class PlayButtonModule {
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -278,7 +301,7 @@ class PlayButtonModule {
 });
 
 /***/ }),
-/* 7 */
+/* 8 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -312,7 +335,7 @@ class ButtonEventAdapter {
 
 
 /***/ }),
-/* 8 */
+/* 9 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -345,7 +368,7 @@ class DisplayValueEventAdapter {
 
 
 /***/ }),
-/* 9 */
+/* 10 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -362,7 +385,7 @@ class StateModule {
         this.globalState = config.defaults;
         this.config = config;
         this.eventBus = eventBus;
-        this._loadExistingState(config);
+        this.eventBus.subscribe(__WEBPACK_IMPORTED_MODULE_0__events_Events__["a" /* default */].GAME_INIT_COMPLETE, this._loadExistingState.bind(this));
     }
 
     addPlayer(count) {
@@ -404,14 +427,16 @@ class StateModule {
     }
 
 
-    _loadExistingState(config) {
-        let serialData = window.localStorage.getItem(config.storageKey);
+    _loadExistingState() {
+        let serialData = window.localStorage.getItem(this.config.storageKey);
         if (serialData !== "undefined") {
             let stateData = JSON.parse(serialData);
             if (stateData) {
                 Object.assign(this.globalState, stateData);
                 this.eventBus.broadcast(new __WEBPACK_IMPORTED_MODULE_1__events_GameEvent__["a" /* default */](__WEBPACK_IMPORTED_MODULE_0__events_Events__["a" /* default */].PLAYER_COUNT_CHANGE, this.globalState.players));
                 this.eventBus.broadcast(new __WEBPACK_IMPORTED_MODULE_1__events_GameEvent__["a" /* default */](__WEBPACK_IMPORTED_MODULE_0__events_Events__["a" /* default */].REWARDS_CHANGED, this.globalState.rewards));
+                this.eventBus.broadcast(new __WEBPACK_IMPORTED_MODULE_1__events_GameEvent__["a" /* default */](__WEBPACK_IMPORTED_MODULE_0__events_Events__["a" /* default */].CURRENCY_CHANGED));
+                this._broadcastFeatures();
                 console.log('Loaded existing game.');
             } else {
                 console.log('No existing game found.');
@@ -419,7 +444,13 @@ class StateModule {
         } else {
             console.log('No existing game found.');
         }
-        setInterval(this._saveState.bind(this), config.autoSaveInterval);
+        setInterval(this._saveState.bind(this), this.config.autoSaveInterval);
+    }
+
+    _broadcastFeatures() {
+        for (var feature in this.globalState.features) {
+            this.eventBus.broadcast(new __WEBPACK_IMPORTED_MODULE_1__events_GameEvent__["a" /* default */](__WEBPACK_IMPORTED_MODULE_0__events_Events__["a" /* default */].FEATURES_CHANGED, feature));
+        }
     }
 
     _saveState() {
@@ -432,7 +463,7 @@ class StateModule {
 
 
 /***/ }),
-/* 10 */
+/* 11 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -475,7 +506,7 @@ class EventBus {
 
 
 /***/ }),
-/* 11 */
+/* 12 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -502,12 +533,12 @@ class EventBus {
 });
 
 /***/ }),
-/* 12 */
+/* 13 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__events_Events__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__UpgradesBuilder__ = __webpack_require__(13);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__UpgradesBuilder__ = __webpack_require__(14);
 
 
 
@@ -547,7 +578,6 @@ class UpgradesModule {
     _removeUpgrade(upgrade) {
         let element = this._getElement(upgrade.id);
         if (element) {
-            debugger;
             element.parent().removeChild(element);
             let element = this._getElement(upgrade.id);
             let index = this.displayElements.indexOf(element);
@@ -567,14 +597,19 @@ class UpgradesModule {
 
     _createElement(upgrade) {
         let upgradeContainer = document.querySelector(this.config.upgradeContainerId);
+        let listElement = document.createElement('li');
+        listElement.upgrade = upgrade;
+
         let newButton = document.createElement('button');
-        newButton.upgrade = upgrade;
         newButton.innerHTML = this._buildUpgradeText(upgrade);
         newButton.id = 'upgrade-' + upgrade.id;
+        newButton.classList.add('btn', 'btn-primary');
         newButton.disabled = !upgrade.isPurchasable(this.stateModule);
         newButton.onclick = this._onUpgradeActivate(upgrade).bind(this);
-        upgradeContainer.appendChild(newButton);
-        this.displayElements.push(newButton);
+
+        listElement.appendChild(newButton);
+        upgradeContainer.appendChild(listElement);
+        this.displayElements.push(listElement);
     }
 
     _buildUpgradeText(upgrade) {
@@ -601,13 +636,13 @@ class UpgradesModule {
 
 
 /***/ }),
-/* 13 */
+/* 14 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__economy_Currency_js__ = __webpack_require__(2);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Upgrade__ = __webpack_require__(14);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__features_Features__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Upgrade__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__features_Features__ = __webpack_require__(3);
 
 
 
@@ -656,7 +691,7 @@ function UpgradeShareWithFriend(id) {
 }
 
 /***/ }),
-/* 14 */
+/* 15 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -702,19 +737,6 @@ class Upgrade {
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = Upgrade;
 
-
-
-/***/ }),
-/* 15 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-class Features {
-    static get POSITIVE_FEEDBACK() {
-        return 'positive-feedback';
-    }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Features;
 
 
 /***/ }),
@@ -772,7 +794,7 @@ class FeatureBuilder {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__events_Events__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Features__ = __webpack_require__(15);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Features__ = __webpack_require__(3);
 
 
 

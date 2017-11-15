@@ -6,6 +6,8 @@ import EventBus from "./events/EventBus";
 import config from './configuration.js';
 import UpgradesModule from "./upgrades/UpgradesModule";
 import FeaturesModule from "./features/FeaturesModule";
+import GameEvent from "./events/GameEvent";
+import Events from "./events/Events";
 
 export default class MainLoop {
 
@@ -15,7 +17,7 @@ export default class MainLoop {
         let eventBus = new EventBus(config);
         let stateModule = new StateModule(config, eventBus);
 
-        return new MainLoop(fps, [
+        return new MainLoop(fps, eventBus, [
             new ButtonEventAdapter(config, eventBus),
             new DisplayValueEventAdapter(config, eventBus),
             new PlayButtonModule(eventBus, stateModule),
@@ -24,15 +26,17 @@ export default class MainLoop {
         ]);
     }
 
-    constructor(fps, modules) {
+    constructor(fps, eventBus, modules) {
         this.fps = fps;
         this.msPerFrame = 1000 / fps;
         this.modules = modules;
+        this.eventBus = eventBus;
     }
 
     start() {
         console.log('started! ' + this.fps);
         requestAnimationFrame(this._runLoop.bind(this));
+        this.eventBus.broadcast(new GameEvent(Events.GAME_INIT_COMPLETE));
     }
 
     _runLoop() {

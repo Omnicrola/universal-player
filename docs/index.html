@@ -15,27 +15,38 @@
 </header>
 <div id="content" class="row">
     <div class="col-sm-4">
-        <div>Players : <span id="players">1</span></div>
-        <div>Rewards : <span id="rewards">0</span></div>
-        <div id="reward-highlight" class="reward-bg">
-            <button id="playButton"><i class="fa fa-play"></i> Play!</button>
+        <div class="panel panel-default">
+            <div class="panel-heading">Play</div>
+            <div class="panel-body">
+                <div>Players : <span id="players">1</span></div>
+                <div id="reward-highlight" class="reward-bg">Rewards : <span id="rewards">0</span></div>
+                <button class="btn btn-primary" id="playButton"><i class="fa fa-play"></i> Play!</button>
+            </div>
         </div>
     </div>
     <div class="col-sm-4">
-        <h3>Upgrades</h3>
-        <div id="upgrades">
+        <div class="panel panel-default">
+            <div class="panel-heading">Upgrades</div>
+            <div class="panel-body">
+                <ul id="upgrades">
+                </ul>
+            </div>
         </div>
     </div>
     <div class="col-sm-4">
-        <div id="microtransactions">
-            <div>100 Smoits per $1</div>
-            <button><i class="fa fa-plus"></i></button>
-            <button><i class="fa fa-minus"></i></button>
-        </div>
-        <div id="rewards-control">
-            <div>100% Chance of reward per play</div>
-            <button><i class="fa fa-plus"></i></button>
-            <button><i class="fa fa-minus"></i></button>
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div id="microtransactions">
+                    <div>100 Smoits per $1</div>
+                    <button class="btn btn-primary"><i class="fa fa-plus"></i></button>
+                    <button class="btn btn-primary"><i class="fa fa-minus"></i></button>
+                </div>
+                <div id="rewards-control">
+                    <div>100% Chance of reward per play</div>
+                    <button class="btn btn-primary"><i class="fa fa-plus"></i></button>
+                    <button class="btn btn-primary"><i class="fa fa-minus"></i></button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

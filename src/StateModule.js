@@ -8,7 +8,7 @@ export default class StateModule {
         this.globalState = config.defaults;
         this.config = config;
         this.eventBus = eventBus;
-        this._loadExistingState(config);
+        this.eventBus.subscribe(Events.GAME_INIT_COMPLETE, this._loadExistingState.bind(this));
     }
 
     addPlayer(count) {
@@ -50,14 +50,16 @@ export default class StateModule {
     }
 
 
-    _loadExistingState(config) {
-        let serialData = window.localStorage.getItem(config.storageKey);
+    _loadExistingState() {
+        let serialData = window.localStorage.getItem(this.config.storageKey);
         if (serialData !== "undefined") {
             let stateData = JSON.parse(serialData);
             if (stateData) {
                 Object.assign(this.globalState, stateData);
                 this.eventBus.broadcast(new GameEvent(Events.PLAYER_COUNT_CHANGE, this.globalState.players));
                 this.eventBus.broadcast(new GameEvent(Events.REWARDS_CHANGED, this.globalState.rewards));
+                this.eventBus.broadcast(new GameEvent(Events.CURRENCY_CHANGED));
+                this._broadcastFeatures();
                 console.log('Loaded existing game.');
             } else {
                 console.log('No existing game found.');
@@ -65,7 +67,13 @@ export default class StateModule {
         } else {
             console.log('No existing game found.');
         }
-        setInterval(this._saveState.bind(this), config.autoSaveInterval);
+        setInterval(this._saveState.bind(this), this.config.autoSaveInterval);
+    }
+
+    _broadcastFeatures() {
+        for (var feature in this.globalState.features) {
+            this.eventBus.broadcast(new GameEvent(Events.FEATURES_CHANGED, feature));
+        }
     }
 
     _saveState() {

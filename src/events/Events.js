@@ -1,4 +1,8 @@
 export default class Events {
+    static get GAME_INIT_COMPLETE() {
+        return 'game-init-complete';
+    };
+
     static get FEATURES_CHANGED() {
         return 'features-changed';
     };

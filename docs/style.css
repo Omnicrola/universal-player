@@ -18,3 +18,19 @@ body {
     background-color: lightcoral;
     transition: 0s;
 }
+
+ul#upgrades {
+    margin: 0;
+    padding: 0;
+}
+
+#upgrades li {
+    margin: 5px;
+    list-style-type: none;
+}
+
+#upgrades li button {
+    max-width: 300px;
+    white-space: normal;
+    width: 100%;
+}

@@ -37,7 +37,6 @@ export default class UpgradesModule {
     _removeUpgrade(upgrade) {
         let element = this._getElement(upgrade.id);
         if (element) {
-            debugger;
             element.parent().removeChild(element);
             let element = this._getElement(upgrade.id);
             let index = this.displayElements.indexOf(element);
@@ -57,14 +56,19 @@ export default class UpgradesModule {
 
     _createElement(upgrade) {
         let upgradeContainer = document.querySelector(this.config.upgradeContainerId);
+        let listElement = document.createElement('li');
+        listElement.upgrade = upgrade;
+
         let newButton = document.createElement('button');
-        newButton.upgrade = upgrade;
         newButton.innerHTML = this._buildUpgradeText(upgrade);
         newButton.id = 'upgrade-' + upgrade.id;
+        newButton.classList.add('btn', 'btn-primary');
         newButton.disabled = !upgrade.isPurchasable(this.stateModule);
         newButton.onclick = this._onUpgradeActivate(upgrade).bind(this);
-        upgradeContainer.appendChild(newButton);
-        this.displayElements.push(newButton);
+
+        listElement.appendChild(newButton);
+        upgradeContainer.appendChild(listElement);
+        this.displayElements.push(listElement);
     }
 
     _buildUpgradeText(upgrade) {
