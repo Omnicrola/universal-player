@@ -22,7 +22,7 @@ export default class MainLoop {
             new DisplayValueEventAdapter(config, eventBus),
             new PlayButtonModule(eventBus, stateModule),
             new UpgradesModule(config, stateModule, eventBus),
-            new FeaturesModule(config, eventBus),
+            new FeaturesModule(config, eventBus, stateModule),
         ]);
     }
 
@@ -31,21 +31,23 @@ export default class MainLoop {
         this.msPerFrame = 1000 / fps;
         this.modules = modules;
         this.eventBus = eventBus;
+
     }
 
     start() {
         console.log('started! ' + this.fps);
+        this.lastFrameTimeMs = Date.now();
         requestAnimationFrame(this._runLoop.bind(this));
         this.eventBus.broadcast(new GameEvent(Events.GAME_INIT_COMPLETE));
     }
 
     _runLoop() {
         let timestamp = Date.now();
-        if (timestamp < this.lastFrameTimeMs + (1000 / this.fps)) {
+        if (timestamp < this.lastFrameTimeMs + this.msPerFrame) {
             requestAnimationFrame(this._runLoop.bind(this));
             return;
         }
-        let delta = (timestamp - this.lastFrameTimeMs ) / this.msPerFrame;
+        let delta = (timestamp - this.lastFrameTimeMs ) / 1000;
         this._update(delta);
         this._render();
         this.lastFrameTimeMs = timestamp;

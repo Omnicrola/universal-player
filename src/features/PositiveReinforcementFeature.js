@@ -20,6 +20,9 @@ export default class PositiveReinforcementFeature {
     deactivate() {
     }
 
+    update(delta) {
+    }
+
     _addRemoveClass(className) {
         this.rewardElement.classList.add(className);
         let self = this;

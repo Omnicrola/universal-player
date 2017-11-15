@@ -207,7 +207,7 @@ class MainLoop {
             new __WEBPACK_IMPORTED_MODULE_2__util_DisplayValueEventAdapter_js__["a" /* default */](__WEBPACK_IMPORTED_MODULE_5__configuration_js__["a" /* default */], eventBus),
             new __WEBPACK_IMPORTED_MODULE_0__PlayButtonModule_js__["a" /* default */](eventBus, stateModule),
             new __WEBPACK_IMPORTED_MODULE_6__upgrades_UpgradesModule__["a" /* default */](__WEBPACK_IMPORTED_MODULE_5__configuration_js__["a" /* default */], stateModule, eventBus),
-            new __WEBPACK_IMPORTED_MODULE_7__features_FeaturesModule__["a" /* default */](__WEBPACK_IMPORTED_MODULE_5__configuration_js__["a" /* default */], eventBus),
+            new __WEBPACK_IMPORTED_MODULE_7__features_FeaturesModule__["a" /* default */](__WEBPACK_IMPORTED_MODULE_5__configuration_js__["a" /* default */], eventBus, stateModule),
         ]);
     }
 
@@ -216,21 +216,23 @@ class MainLoop {
         this.msPerFrame = 1000 / fps;
         this.modules = modules;
         this.eventBus = eventBus;
+
     }
 
     start() {
         console.log('started! ' + this.fps);
+        this.lastFrameTimeMs = Date.now();
         requestAnimationFrame(this._runLoop.bind(this));
         this.eventBus.broadcast(new __WEBPACK_IMPORTED_MODULE_8__events_GameEvent__["a" /* default */](__WEBPACK_IMPORTED_MODULE_9__events_Events__["a" /* default */].GAME_INIT_COMPLETE));
     }
 
     _runLoop() {
         let timestamp = Date.now();
-        if (timestamp < this.lastFrameTimeMs + (1000 / this.fps)) {
+        if (timestamp < this.lastFrameTimeMs + this.msPerFrame) {
             requestAnimationFrame(this._runLoop.bind(this));
             return;
         }
-        let delta = (timestamp - this.lastFrameTimeMs ) / this.msPerFrame;
+        let delta = (timestamp - this.lastFrameTimeMs ) / 1000;
         this._update(delta);
         this._render();
         this.lastFrameTimeMs = timestamp;
@@ -296,7 +298,12 @@ class PlayButtonModule {
 /* harmony default export */ __webpack_exports__["a"] = ({
     reward(chanceOfSuccess) {
         let number = Math.random();
-        return  number <= chanceOfSuccess;
+        return number <= chanceOfSuccess;
+    },
+
+    jitter(num, amount) {
+        let offset = (Math.random() * (amount * 2)) - amount;
+        return num + offset;
     }
 });
 
@@ -514,12 +521,19 @@ class EventBus {
 
     playButtonId: '#playButton',
     rewardCountDisplayId: '#rewards',
-    playerCountDisplayId: '#players',
+    playerCountDisplayId: '#player-count-display',
     upgradeContainerId: '#upgrades',
 
     rewardHighlightElementId: '#reward-highlight',
     rewardGainClass: 'reward-gain',
     rewardMissedClass: 'reward-missed',
+
+    playerEngagment: {
+        displayId: '#player-engagement-display',
+        intervalInSeconds: 5,
+        targetInteractionsPerInterval: 15,
+        flatOtherPlayerEngagementAmount: 0.2
+    },
 
     storageKey: 'universal-player-v1',
     autoSaveInterval: (1000 * 30),
@@ -750,8 +764,8 @@ class Upgrade {
 
 
 class FeaturesModule {
-    constructor(config, eventBus) {
-        this.features = __WEBPACK_IMPORTED_MODULE_1__FeatureBuilder__["a" /* FeatureBuilder */].build(config, eventBus);
+    constructor(config, eventBus, stateModule) {
+        this.features = __WEBPACK_IMPORTED_MODULE_1__FeatureBuilder__["a" /* FeatureBuilder */].build(config, eventBus, stateModule);
         eventBus.subscribe(__WEBPACK_IMPORTED_MODULE_0__events_Events__["a" /* default */].FEATURES_CHANGED, this._onFeatureChange.bind(this));
     }
 
@@ -766,6 +780,10 @@ class FeaturesModule {
     }
 
     update(delta) {
+        let total = this.features.length;
+        for (let index = 0; index < total; index++) {
+            this.features[index].update(delta);
+        }
     }
 
 }
@@ -778,11 +796,16 @@ class FeaturesModule {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__PositiveReinforcementFeature__ = __webpack_require__(18);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__PlayerEngagementFeature__ = __webpack_require__(19);
+
 
 
 class FeatureBuilder {
-    static build(config, eventBus) {
-        return [new __WEBPACK_IMPORTED_MODULE_0__PositiveReinforcementFeature__["a" /* default */](config, eventBus)];
+    static build(config, eventBus, stateModule) {
+        return [
+            new __WEBPACK_IMPORTED_MODULE_0__PositiveReinforcementFeature__["a" /* default */](config, eventBus),
+            new __WEBPACK_IMPORTED_MODULE_1__PlayerEngagementFeature__["a" /* default */](config, eventBus, stateModule)
+        ];
     }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = FeatureBuilder;
@@ -817,6 +840,9 @@ class PositiveReinforcementFeature {
     deactivate() {
     }
 
+    update(delta) {
+    }
+
     _addRemoveClass(className) {
         this.rewardElement.classList.add(className);
         let self = this;
@@ -836,6 +862,104 @@ class PositiveReinforcementFeature {
 
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = PositiveReinforcementFeature;
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Features__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__events_Events__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__util_Formatters__ = __webpack_require__(20);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__util_Randomizer__ = __webpack_require__(7);
+
+
+
+
+
+class PlayerEngagementFeature {
+    constructor(config, eventBus, stateModule) {
+        this.config = config;
+        this.eventBus = eventBus;
+        this.stateModule = stateModule;
+        this.totalInteractionsThisInterval = 0;
+        this.elapsedSinceLastUpdate = 0;
+        this.engagmentElement = document.querySelector(config.playerEngagment.displayId);
+    }
+
+    get name() {
+        return __WEBPACK_IMPORTED_MODULE_0__Features__["a" /* default */].POSITIVE_FEEDBACK;
+    }
+
+    activate() {
+        this.eventBus.subscribe(__WEBPACK_IMPORTED_MODULE_1__events_Events__["a" /* default */].PLAY_BUTTON, this._onInteraction.bind(this));
+    }
+
+    deactivate() {
+    }
+
+    update(delta) {
+        this.elapsedSinceLastUpdate += delta;
+        let interval = this.config.playerEngagment.intervalInSeconds;
+        if (this.elapsedSinceLastUpdate > interval) {
+            this._calculateEngagement();
+            this.totalInteractionsThisInterval = 0;
+            this.elapsedSinceLastUpdate = 0;
+        }
+    }
+
+    _onInteraction() {
+        this.totalInteractionsThisInterval++;
+    }
+
+    _calculateEngagement() {
+
+        let otherPlayersRateTotal = this._getOtherPlayersEngagement();
+        let otherPlayerCount = this.stateModule.players();
+
+        let targetInteractions = this.config.playerEngagment.targetInteractionsPerInterval;
+        let activePlayersRate = Math.min(1, this.totalInteractionsThisInterval / targetInteractions);
+
+        let actualRate = (otherPlayersRateTotal + activePlayersRate) / (otherPlayerCount + 1);
+        this._updateDisplay(actualRate);
+    }
+
+    _getOtherPlayersEngagement() {
+        let otherPlayerRate = this.config.playerEngagment.flatOtherPlayerEngagementAmount;
+        let otherPlayerCount = this.stateModule.players();
+        let otherPlayersRateTotal = __WEBPACK_IMPORTED_MODULE_3__util_Randomizer__["a" /* default */].jitter(otherPlayerRate * otherPlayerCount, 0.01);
+        return otherPlayersRateTotal;
+    }
+
+    _updateDisplay(engagementPerInterval) {
+        this.engagmentElement.innerText = __WEBPACK_IMPORTED_MODULE_2__util_Formatters__["a" /* default */].number(engagementPerInterval * 100, 2, 3) + "%";
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = PlayerEngagementFeature;
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+class Formatters {
+    static number(theNumber, decimals, leadingZeros = 0) {
+        if (typeof theNumber !== 'number') {
+            theNumber = 0;
+        }
+        let withDecimals = theNumber.toFixed(decimals)
+        let zerosToAdd = leadingZeros - theNumber.toFixed(0).toString().length;
+
+        let zeros = "";
+        for (let i = 0; i < zerosToAdd; i++) {
+            zeros += "0";
+        }
+        return zeros + withDecimals;
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Formatters;
 
 
 /***/ })

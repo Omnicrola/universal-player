@@ -2,8 +2,8 @@ import Events from "../events/Events";
 import {FeatureBuilder} from "./FeatureBuilder";
 
 export default class FeaturesModule {
-    constructor(config, eventBus) {
-        this.features = FeatureBuilder.build(config, eventBus);
+    constructor(config, eventBus, stateModule) {
+        this.features = FeatureBuilder.build(config, eventBus, stateModule);
         eventBus.subscribe(Events.FEATURES_CHANGED, this._onFeatureChange.bind(this));
     }
 
@@ -18,6 +18,10 @@ export default class FeaturesModule {
     }
 
     update(delta) {
+        let total = this.features.length;
+        for (let index = 0; index < total; index++) {
+            this.features[index].update(delta);
+        }
     }
 
 }
