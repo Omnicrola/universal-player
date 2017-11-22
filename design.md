@@ -4,35 +4,47 @@
 Using common psychological manipulation game design mechanics, incentivise the player to progress to the end of the game, while also making them the agent of their own manipulation.
 
 ## Main Mechanic
-* Hitting "Play" will use X rewards to potentially win Y rewards
-* If there are no rewards, player can buy credits to Play and earn rewards them (not enabled until upgrade)
-* Fairly quickly, an auto-play feature should be introduced
+* Hitting "Play" will result in 1 reward
+  * First 20 ever are always successful
+  * 50% chance of receiving a reward
+  * Upgrades can add possibility of extra words
 
 ## Upgrade Flow Tree
 All upgrades increase the engagement (even if not visible). Adjusting the random reward percentage too low or too high will cause the engagement to fall. Optimal reward is around 16%. 
 
-* 5/10 Add Rewards System
-  * 100/200 Add cosmetics upgrades
-      * 50/100 Upgrade font
-      * 50/100 Upgrade styles
-      * 50/100 Upgrade button icons
-      * 100/200 Add visual feedback of rewards
-      * 100/200 Add audio feedback of rewards
-      * 500/750 Unlock sticker upgrades
-        * 100/500 Unlock a sticker (repeatable ++100, changes styling of icons)
-      * 500/750 Unlock background upgrades
-        * 100/500 Unlock a background (repeatable ++100, selectable wallpaper)
-  * 100/200 Enable Gameplay Upgrades (appears after "add visual feedback")
-    * 100/200 Enable operant conditioning 
-    * 500/1000 Enable $$$ microtransactions (Revenue appears, player can exchange revenue for Rewards)
-    * 150/300 Add chance of extra reward
-      * 500/700 Add Random Reward Adjustment Control (% of reward affects bonuses and engagement)
-    * 250/500 Add multiplayer (player count appears, requires random reward upgrade)
-      * 250/500 Add referral bonuses (track players recruited, add bonus rewards)
-        * 250/500 Recruit a friend (repeats, +100 cost per)
-
-## Upgrade -> Feature Map and Order
-* Random bonus on upgrade (or loss)
-* visual reward feedback - higlight green on win/red on lose
-* audio reward feedback - play audio tone on win (casio tone)
-* randomzied reward - Play button now sometimes loses
+* 10R Add Rewards System
+  * 250R Add player tracking (player count appears)
+    * $500 Promote game on social media (repeating, boosts player count by a percentage)
+      * $25,000 Conduct focus group (increases player engagement)
+    * $50,000 Promote game on mobile app stores (boost player count)
+      * $100,000 Promote game on TV (repeating, boosts player count by percentage)
+      * $500,000 File lawsuits against competing games (boosts player count)
+      * 1.0m Solicit celebrity endorsements (boost player count)
+      * $2.5m Launch DDOS attacks against competing games (boost player count)
+      * $4.0m Conduct cross-promotions with food & beverage companies (boost player count)
+        * $7.0m Purchase home food delivery company (boost player engagement) 
+      * $5.0m Lobby congress to pass regulations that disadvantage competition (boost player count)
+  * 100R Add cosmetics upgrades
+    * 100R Upgrade font
+    * 100R Upgrade styles
+    * 100R Upgrade button icons
+    * 200R Add visual feedback of rewards
+    * 200R Add audio feedback of rewards
+    * 750R Unlock sticker upgrades
+      * 500R Unlock a sticker (repeatable ++100, changes styling of icons)
+    * 750R Unlock background upgrades
+      * 500R Unlock a background (repeatable ++100, selectable wallpaper)
+  * 200R Enable Gameplay Upgrades (appears after "add visual feedback")
+    * 300R Add chance of extra reward
+      * 200R Enable operant conditioning 
+        * 700R Add Random Reward Adjustment Control (% of reward affects bonuses and engagement)
+            * 500R Add referral bonuses (track players recruited, add bonus rewards)
+              * 500R Recruit a friend (repeats, +100 cost per)
+        * 1000R Enable $$$ microtransactions (Revenue appears, player can exchange revenue for Rewards)
+          * 2000R Enable exchange of Rewards for cash (enables exchange rate)
+          * 
+        
+          
+## Features
+### Microtransactions
+Enabling microtransactions makes revenue income based on total number of players and percent engagement.
