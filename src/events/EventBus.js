@@ -20,7 +20,12 @@ export default class EventBus {
             let total = subscribersToEvent.length;
             console.log("Broadcasting event '" + type + "' to " + total + " subscribers");
             for (let index = 0; index < total; index++) {
-                subscribersToEvent[index](event);
+                try {
+                    subscribersToEvent[index](event);
+                } catch (err) {
+                    console.log('Subscriber threw an error: ' + err);
+                }
+
             }
         }
     }

@@ -9,6 +9,10 @@ export default {
     rewardGainClass: 'reward-gain',
     rewardMissedClass: 'reward-missed',
 
+    ids: {
+        rewardReadoutId: 'reward-amount-feedback'
+    },
+
     playerEngagment: {
         displayId: '#player-engagement-display',
         intervalInSeconds: 5,

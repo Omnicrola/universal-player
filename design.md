@@ -26,6 +26,7 @@ Using common psychological manipulation game design mechanics, incentivise the p
   * Microtransactions - play to win
 
 ## Upgrade -> Feature Map and Order
+* Random bonus on upgrade (or loss)
 * visual reward feedback - higlight green on win/red on lose
 * audio reward feedback - play audio tone on win (casio tone)
 * randomzied reward - Play button now sometimes loses

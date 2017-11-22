@@ -37,6 +37,8 @@ export default class UpgradesModule {
     _removeUpgrade(upgrade) {
         let element = this._getElement(upgrade.id);
         if (element) {
+            console.log("WTF");
+            console.log(element);
             element.parent().removeChild(element);
             let element = this._getElement(upgrade.id);
             let index = this.displayElements.indexOf(element);
@@ -88,6 +90,9 @@ export default class UpgradesModule {
     }
 
     _getElement(id) {
-        return this.displayElements.filter(element => element.upgrade.id === id)[0];
+        let filtered = this.displayElements
+            .filter(element => element.upgrade.id === id);
+        console.log(filtered)
+        return filtered[0];
     }
 }

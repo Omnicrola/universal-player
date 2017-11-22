@@ -60,7 +60,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 4);
+/******/ 	return __webpack_require__(__webpack_require__.s = 5);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -135,6 +135,23 @@ class GameEvent {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+class Features {
+    static get RANDOM_BONUS() {
+        return 'random-bonus';
+    };
+
+    static get POSITIVE_FEEDBACK() {
+        return 'positive-feedback';
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = Features;
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
 class Currency {
     static get REWARD() {
         return 'rewards';
@@ -144,36 +161,40 @@ class Currency {
 
 
 /***/ }),
-/* 3 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-class Features {
-    static get POSITIVE_FEEDBACK() {
-        return 'positive-feedback';
-    }
-}
-/* harmony export (immutable) */ __webpack_exports__["a"] = Features;
-
-
-/***/ }),
 /* 4 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__MainLoop_js__ = __webpack_require__(5);
+/* harmony default export */ __webpack_exports__["a"] = ({
+    reward(chanceOfSuccess) {
+        let number = Math.random();
+        return number <= chanceOfSuccess;
+    },
 
-
-var mainLoop = __WEBPACK_IMPORTED_MODULE_0__MainLoop_js__["a" /* default */].build();
-mainLoop.start();
+    jitter(num, amount) {
+        let offset = (Math.random() * (amount * 2)) - amount;
+        return num + offset;
+    }
+});
 
 /***/ }),
 /* 5 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__PlayButtonModule_js__ = __webpack_require__(6);
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__MainLoop_js__ = __webpack_require__(6);
+
+
+var mainLoop = __WEBPACK_IMPORTED_MODULE_0__MainLoop_js__["a" /* default */].build();
+mainLoop.start();
+
+/***/ }),
+/* 6 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__PlayButtonModule_js__ = __webpack_require__(7);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util_ButtonEventAdapter_js__ = __webpack_require__(8);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__util_DisplayValueEventAdapter_js__ = __webpack_require__(9);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__StateModule_js__ = __webpack_require__(10);
@@ -254,12 +275,12 @@ class MainLoop {
 
 
 /***/ }),
-/* 6 */
+/* 7 */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__events_Events__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util_Randomizer_js__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__util_Randomizer_js__ = __webpack_require__(4);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__events_GameEvent__ = __webpack_require__(1);
 
 
@@ -289,23 +310,6 @@ class PlayButtonModule {
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = PlayButtonModule;
 
-
-/***/ }),
-/* 7 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony default export */ __webpack_exports__["a"] = ({
-    reward(chanceOfSuccess) {
-        let number = Math.random();
-        return number <= chanceOfSuccess;
-    },
-
-    jitter(num, amount) {
-        let offset = (Math.random() * (amount * 2)) - amount;
-        return num + offset;
-    }
-});
 
 /***/ }),
 /* 8 */
@@ -381,7 +385,7 @@ class DisplayValueEventAdapter {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__events_Events__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__events_GameEvent__ = __webpack_require__(1);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__economy_Currency__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__economy_Currency__ = __webpack_require__(3);
 
 
 
@@ -497,7 +501,12 @@ class EventBus {
             let total = subscribersToEvent.length;
             console.log("Broadcasting event '" + type + "' to " + total + " subscribers");
             for (let index = 0; index < total; index++) {
-                subscribersToEvent[index](event);
+                try {
+                    subscribersToEvent[index](event);
+                } catch (err) {
+                    console.log('Subscriber threw an error: ' + err);
+                }
+
             }
         }
     }
@@ -527,6 +536,10 @@ class EventBus {
     rewardHighlightElementId: '#reward-highlight',
     rewardGainClass: 'reward-gain',
     rewardMissedClass: 'reward-missed',
+
+    ids: {
+        rewardReadoutId: 'reward-amount-feedback'
+    },
 
     playerEngagment: {
         displayId: '#player-engagement-display',
@@ -592,6 +605,8 @@ class UpgradesModule {
     _removeUpgrade(upgrade) {
         let element = this._getElement(upgrade.id);
         if (element) {
+            console.log("WTF");
+            console.log(element);
             element.parent().removeChild(element);
             let element = this._getElement(upgrade.id);
             let index = this.displayElements.indexOf(element);
@@ -643,7 +658,10 @@ class UpgradesModule {
     }
 
     _getElement(id) {
-        return this.displayElements.filter(element => element.upgrade.id === id)[0];
+        let filtered = this.displayElements
+            .filter(element => element.upgrade.id === id);
+        console.log(filtered)
+        return filtered[0];
     }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = UpgradesModule;
@@ -654,9 +672,9 @@ class UpgradesModule {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__economy_Currency_js__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__economy_Currency_js__ = __webpack_require__(3);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Upgrade__ = __webpack_require__(15);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__features_Features__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__features_Features__ = __webpack_require__(2);
 
 
 
@@ -664,15 +682,32 @@ class UpgradesModule {
 class UpgradesBuilder {
     static build() {
         return [
-            UpgradeShareWithFriend(1),
-            UpgradeAddRewardFeedback(2),
+            UpgradeRandomBonus(1),
+            UpgradeShareWithFriend(2),
+            UpgradeAddRewardFeedback(3),
         ];
     }
 }
 /* harmony export (immutable) */ __webpack_exports__["a"] = UpgradesBuilder;
 
 
-function UpgradeAddRewardFeedback(id){
+function UpgradeRandomBonus(id) {
+    return new __WEBPACK_IMPORTED_MODULE_1__Upgrade__["a" /* default */]({
+        id: id,
+        title: 'Extra Bonus',
+        cost: '25 Rewards',
+        yields: 'Player randomly receives extra Rewards',
+        costs: [{type: __WEBPACK_IMPORTED_MODULE_0__economy_Currency_js__["a" /* default */].REWARD, amount: 25}],
+        isVisible: (stateModule) => {
+            return stateModule.rewards() >= 20;
+        },
+        activate: (stateModule) => {
+            stateModule.activateFeature(__WEBPACK_IMPORTED_MODULE_2__features_Features__["a" /* default */].RANDOM_BONUS)
+        }
+    });
+}
+
+function UpgradeAddRewardFeedback(id) {
     return new __WEBPACK_IMPORTED_MODULE_1__Upgrade__["a" /* default */]({
         id: id,
         title: 'Basic operant conditioning',
@@ -688,6 +723,7 @@ function UpgradeAddRewardFeedback(id){
     });
 
 }
+
 function UpgradeShareWithFriend(id) {
     return new __WEBPACK_IMPORTED_MODULE_1__Upgrade__["a" /* default */]({
         id: id,
@@ -709,7 +745,7 @@ function UpgradeShareWithFriend(id) {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__economy_Currency__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__economy_Currency__ = __webpack_require__(3);
 
 
 class Upgrade {
@@ -797,6 +833,8 @@ class FeaturesModule {
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__PositiveReinforcementFeature__ = __webpack_require__(18);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__PlayerEngagementFeature__ = __webpack_require__(19);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__RandomRewardFeature__ = __webpack_require__(21);
+
 
 
 
@@ -804,7 +842,8 @@ class FeatureBuilder {
     static build(config, eventBus, stateModule) {
         return [
             new __WEBPACK_IMPORTED_MODULE_0__PositiveReinforcementFeature__["a" /* default */](config, eventBus),
-            new __WEBPACK_IMPORTED_MODULE_1__PlayerEngagementFeature__["a" /* default */](config, eventBus, stateModule)
+            new __WEBPACK_IMPORTED_MODULE_1__PlayerEngagementFeature__["a" /* default */](config, eventBus, stateModule),
+            new __WEBPACK_IMPORTED_MODULE_2__RandomRewardFeature__["a" /* default */](config, eventBus)
         ];
     }
 }
@@ -817,7 +856,7 @@ class FeatureBuilder {
 
 "use strict";
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__events_Events__ = __webpack_require__(0);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Features__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__Features__ = __webpack_require__(2);
 
 
 
@@ -869,10 +908,10 @@ class PositiveReinforcementFeature {
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Features__ = __webpack_require__(3);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Features__ = __webpack_require__(2);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__events_Events__ = __webpack_require__(0);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__util_Formatters__ = __webpack_require__(20);
-/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__util_Randomizer__ = __webpack_require__(7);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_3__util_Randomizer__ = __webpack_require__(4);
 
 
 
@@ -962,6 +1001,68 @@ class Formatters {
 /* harmony export (immutable) */ __webpack_exports__["a"] = Formatters;
 
 
+/***/ }),
+/* 21 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__Features__ = __webpack_require__(2);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__events_Events__ = __webpack_require__(0);
+
+
+
+class RandomRewardFeature {
+
+
+    constructor(config, eventBus) {
+        this.eventBus = eventBus;
+        this.readoutElement = document.querySelector(config.ids.rewardReadoutId);
+        this.baseClass = 'reward-feedback';
+        this.rewardClass = 'reward';
+        this.lossClass = 'loss';
+    }
+
+    get name() {
+        return __WEBPACK_IMPORTED_MODULE_0__Features__["a" /* default */].RANDOM_BONUS;
+    }
+
+    activate() {
+        this.eventBus.subscribe(__WEBPACK_IMPORTED_MODULE_1__events_Events__["a" /* default */].GAIN_REWARD, this._onRewardGain.bind(this));
+        this.eventBus.subscribe(__WEBPACK_IMPORTED_MODULE_1__events_Events__["a" /* default */].REWARD_MISSED, this._onRewardMissed.bind(this));
+    }
+
+    deactivate() {
+    }
+
+    upgrade(delta) {
+    }
+
+    _onRewardGain() {
+        this.readoutElement.innerText = "+1";
+        this._resetClass(this.rewardClass);
+        this._delayedResetClass(this.rewardClass, 500);
+    }
+
+    _onRewardMissed() {
+        this.readoutElement.innerText = "-1";
+        this._resetClass(this.lossClass);
+        this._delayedResetClass(this.lossClass, 500);
+    }
+
+    _delayedResetClass(className, delay) {
+        setTimeout(() => {
+            this.readoutElement.classList.remove(className);
+        }, delay);
+    }
+
+    _resetClass(className) {
+        this.readoutElement.classList.remove(this.baseClass);
+        this.readoutElement.classList.remove(this.rewardClass);
+        this.readoutElement.className.add(className);
+    }
+}
+/* harmony export (immutable) */ __webpack_exports__["a"] = RandomRewardFeature;
+
+
 /***/ })
 /******/ ]);
-//# sourceMappingURL=bundle.js.map

@@ -5,13 +5,30 @@ import Features from "../features/Features";
 export default class UpgradesBuilder {
     static build() {
         return [
-            UpgradeShareWithFriend(1),
-            UpgradeAddRewardFeedback(2),
+            UpgradeRandomBonus(1),
+            UpgradeShareWithFriend(2),
+            UpgradeAddRewardFeedback(3),
         ];
     }
 }
 
-function UpgradeAddRewardFeedback(id){
+function UpgradeRandomBonus(id) {
+    return new Upgrade({
+        id: id,
+        title: 'Extra Bonus',
+        cost: '25 Rewards',
+        yields: 'Player randomly receives extra Rewards',
+        costs: [{type: Currency.REWARD, amount: 25}],
+        isVisible: (stateModule) => {
+            return stateModule.rewards() >= 20;
+        },
+        activate: (stateModule) => {
+            stateModule.activateFeature(Features.RANDOM_BONUS)
+        }
+    });
+}
+
+function UpgradeAddRewardFeedback(id) {
     return new Upgrade({
         id: id,
         title: 'Basic operant conditioning',
@@ -27,6 +44,7 @@ function UpgradeAddRewardFeedback(id){
     });
 
 }
+
 function UpgradeShareWithFriend(id) {
     return new Upgrade({
         id: id,

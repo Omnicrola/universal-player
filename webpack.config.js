@@ -7,5 +7,5 @@ module.exports = {
         path: path.resolve(__dirname, 'docs')
     },
     watch: true,
-    devtool: 'source-map'
+    // devtool: 'source-map'
 };

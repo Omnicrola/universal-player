@@ -34,3 +34,14 @@ ul#upgrades {
     white-space: normal;
     width: 100%;
 }
+
+#reward-amount-feedback {
+    font-weight: bold;
+}
+
+#reward-amount-feedback.reward-feedback.reward {
+    color: green;
+}
+#reward-amount-feedback.reward-feedback.loss {
+    color: red;
+}
